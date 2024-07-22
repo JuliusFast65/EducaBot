@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria de Multiplicaciones</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            text-align: center;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Juego de Memoria de Multiplicaciones</h1>
+        <div id="cards" class="cards"></div>
+    </div>
+
+    <script>
+        const cards = document.getElementById('cards');
+        let values = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+
+        function createCard(value) {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.textContent = '?';
+            card.addEventListener('click', () => flipCard(card, value));
+            return card;
+        }
+
+        function flipCard(card, value) {
+            if (selectedCards.length < 2 && !selectedCards.includes(card)) {
+                card.textContent = value;
+                selectedCards.push(card);
+
+                if (selectedCards.length === 2) {
+                    setTimeout(checkMatch, 1000);
+                }
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+            const value1 = card1.textContent;
+            const value2 = card2.textContent;
+
+            if (value1 === value2) {
+                card1.style.backgroundColor = '#2ecc71';
+                card2.style.backgroundColor = '#2ecc71';
+                matchedPairs++;
+
+                if (matchedPairs === 8) {
+                    alert('¡Felicidades! Has completado el juego.');
+                }
+            } else {
+                card1.textContent = '?';
+                card2.textContent = '?';
+            }
+
+            selectedCards = [];
+        }
+
+        function initGame() {
+            values = [];
+            for (let i = 1; i <= 8; i++) {
+                const product = i * 2;
+                values.push(product, product);
+            }
+            values.sort(() => Math.random() - 0.5);
+
+            cards.innerHTML = '';
+            values.forEach(value => {
+                cards.appendChild(createCard(value));
+            });
+
+            matchedPairs = 0;
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
