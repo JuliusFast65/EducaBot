@@ -38,19 +38,27 @@
         .card:hover {
             transform: scale(1.05);
         }
+        #attempts {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
         <h1>Juego de Memoria de Multiplicaciones</h1>
         <div id="cards" class="cards"></div>
+        <div id="attempts">Intentos: 0</div>
     </div>
 
     <script>
         const cards = document.getElementById('cards');
+        const attemptsDisplay = document.getElementById('attempts');
         let values = [];
         let selectedCards = [];
         let matchedPairs = 0;
+        let attempts = 0;
 
         function createCard(value) {
             const card = document.createElement('div');
@@ -61,11 +69,13 @@
         }
 
         function flipCard(card, value) {
-            if (selectedCards.length < 2 && !selectedCards.includes(card)) {
+            if (selectedCards.length < 2 && !selectedCards.includes(card) && card.textContent === '?') {
                 card.textContent = value;
                 selectedCards.push(card);
 
                 if (selectedCards.length === 2) {
+                    attempts++;
+                    attemptsDisplay.textContent = `Intentos: ${attempts}`;
                     setTimeout(checkMatch, 1000);
                 }
             }
@@ -82,7 +92,10 @@
                 matchedPairs++;
 
                 if (matchedPairs === 8) {
-                    alert('¡Felicidades! Has completado el juego.');
+                    setTimeout(() => {
+                        alert(`¡Felicidades! Has completado el juego en ${attempts} intentos.`);
+                        initGame();
+                    }, 500);
                 }
             } else {
                 card1.textContent = '?';
@@ -106,6 +119,8 @@
             });
 
             matchedPairs = 0;
+            attempts = 0;
+            attemptsDisplay.textContent = 'Intentos: 0';
         }
 
         initGame();
