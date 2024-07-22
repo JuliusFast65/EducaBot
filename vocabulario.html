@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Vocabulario en Inglés</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .game-container {
+            text-align: center;
+        }
+        #word {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Juego de Vocabulario en Inglés</h1>
+        <div id="word"></div>
+        <div id="options" class="options"></div>
+        <p id="score">Puntuación: 0</p>
+    </div>
+
+    <script>
+        const words = [
+            {word: 'Apple', translation: 'Manzana'},
+            {word: 'House', translation: 'Casa'},
+            {word: 'Dog', translation: 'Perro'},
+            {word: 'Cat', translation: 'Gato'},
+            {word: 'Book', translation: 'Libro'},
+            {word: 'Sun', translation: 'Sol'},
+            {word: 'Moon', translation: 'Luna'},
+            {word: 'Tree', translation: 'Árbol'},
+            {word: 'Flower', translation: 'Flor'},
+            {word: 'Water', translation: 'Agua'}
+        ];
+
+        let currentWord;
+        let score = 0;
+
+        function selectWord() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('word').textContent = currentWord.word;
+        }
+
+        function createOptions() {
+            const options = document.getElementById('options');
+            options.innerHTML = '';
+            
+            const correctAnswer = currentWord.translation;
+            const incorrectAnswers = words.filter(w => w !== currentWord)
+                                         .map(w => w.translation)
+                                         .sort(() => Math.random() - 0.5)
+                                         .slice(0, 3);
+            
+            const allOptions = [correctAnswer, ...incorrectAnswers].sort(() => Math.random() - 0.5);
+
+            allOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                options.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedOption) {
+            if (selectedOption === currentWord.translation) {
+                score++;
+                alert('¡Correcto!');
+            } else {
+                alert(`Incorrecto. La respuesta correcta es: ${currentWord.translation}`);
+            }
+            document.getElementById('score').textContent = `Puntuación: ${score}`;
+            nextQuestion();
+        }
+
+        function nextQuestion() {
+            selectWord();
+            createOptions();
+        }
+
+        nextQuestion();
+    </script>
+</body>
+</html>
