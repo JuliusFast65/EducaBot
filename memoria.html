@@ -59,13 +59,13 @@
     <div class="game-container">
         <h1>Juego de Memoria de Multiplicaciones</h1>
         <div id="start-screen">
-            <p>¿Cuántos intentos quieres tener?</p>
-            <input type="number" id="attempts-input" min="1" value="10">
+            <p>¿Cuántos intentos fallidos quieres permitir?</p>
+            <input type="number" id="attempts-input" min="1" value="5">
             <button id="start-button">Comenzar Juego</button>
         </div>
         <div id="game-screen" style="display: none;">
             <div id="cards" class="cards"></div>
-            <div id="attempts">Intentos restantes: 0</div>
+            <div id="attempts">Intentos fallidos restantes: 0</div>
         </div>
     </div>
 
@@ -79,16 +79,17 @@
         let values = [];
         let selectedCards = [];
         let matchedPairs = 0;
-        let attempts = 0;
+        let failedAttempts = 0;
+        let maxFailedAttempts = 0;
 
         startButton.addEventListener('click', () => {
-            attempts = parseInt(attemptsInput.value);
-            if (attempts > 0) {
+            maxFailedAttempts = parseInt(attemptsInput.value);
+            if (maxFailedAttempts > 0) {
                 startScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
                 initGame();
             } else {
-                alert('Por favor, introduce un número válido de intentos.');
+                alert('Por favor, introduce un número válido de intentos fallidos.');
             }
         });
 
@@ -101,13 +102,11 @@
         }
 
         function flipCard(card, value) {
-            if (attempts > 0 && selectedCards.length < 2 && !selectedCards.includes(card) && card.textContent === '?') {
+            if (failedAttempts < maxFailedAttempts && selectedCards.length < 2 && !selectedCards.includes(card) && card.textContent === '?') {
                 card.textContent = value;
                 selectedCards.push(card);
 
                 if (selectedCards.length === 2) {
-                    attempts--;
-                    attemptsDisplay.textContent = `Intentos restantes: ${attempts}`;
                     setTimeout(checkMatch, 1000);
                 }
             }
@@ -125,18 +124,20 @@
 
                 if (matchedPairs === 8) {
                     setTimeout(() => {
-                        alert(`¡Felicidades! Has completado el juego con ${attempts} intentos restantes.`);
+                        alert(`¡Felicidades! Has completado el juego con ${maxFailedAttempts - failedAttempts} intentos fallidos restantes.`);
                         resetGame();
                     }, 500);
                 }
             } else {
                 card1.textContent = '?';
                 card2.textContent = '?';
+                failedAttempts++;
+                attemptsDisplay.textContent = `Intentos fallidos restantes: ${maxFailedAttempts - failedAttempts}`;
             }
 
             selectedCards = [];
 
-            if (attempts === 0 && matchedPairs < 8) {
+            if (failedAttempts >= maxFailedAttempts && matchedPairs < 8) {
                 setTimeout(() => {
                     alert('Lamentablemente has perdido. ¡Inténtalo de nuevo!');
                     resetGame();
@@ -158,7 +159,8 @@
             });
 
             matchedPairs = 0;
-            attemptsDisplay.textContent = `Intentos restantes: ${attempts}`;
+            failedAttempts = 0;
+            attemptsDisplay.textContent = `Intentos fallidos restantes: ${maxFailedAttempts}`;
         }
 
         function resetGame() {
