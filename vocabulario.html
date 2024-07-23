@@ -78,13 +78,11 @@
         let score = 0;
 
 async function fetchWords() {
-    const prompt = 'Generate a list of 120 basic English words with their Spanish translations for children, formatted as JSON: [{"word": "English word", "translation": "Spanish translation"}, ...]';
-
     try {
         console.log('Fetching words...');
         const response = await fetch('/.netlify/functions/getWords', {
             method: 'POST',
-            body: JSON.stringify({ prompt }),
+            body: JSON.stringify({ prompt: 'Test prompt' }),
         });
 
         if (!response.ok) {
@@ -96,20 +94,14 @@ async function fetchWords() {
         const data = await response.json();
         console.log('Received data:', data);
 
-        if (!data.words) {
-            console.error('No words in response');
-            throw new Error('No words received');
-        }
-
-        const parsedWords = JSON.parse(data.words);
-        console.log('Parsed words:', parsedWords);
-
-        if (!Array.isArray(parsedWords) || parsedWords.length === 0) {
-            console.error('Invalid words data');
-            throw new Error('Invalid words data');
-        }
-
-        return parsedWords;
+        // For testing purposes, return a fixed set of words
+        return [
+            {"word": "Apple", "translation": "Manzana"},
+            {"word": "House", "translation": "Casa"},
+            {"word": "Dog", "translation": "Perro"},
+            {"word": "Cat", "translation": "Gato"},
+            {"word": "Book", "translation": "Libro"}
+        ];
     } catch (error) {
         console.error('Error fetching words:', error);
         alert(`Error fetching words: ${error.message}`);
