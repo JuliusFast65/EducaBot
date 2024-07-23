@@ -39,7 +39,7 @@
         button:hover {
             background-color: #2980b9;
         }
-        #score, #loading {
+        #score, #loading, #error {
             margin-top: 20px;
             font-size: 18px;
         }
@@ -49,6 +49,7 @@
     <div class="game-container">
         <h1>Juego de Vocabulario en Inglés</h1>
         <div id="loading">Cargando palabras...</div>
+        <div id="error" style="display: none;">Error cargando palabras. Usando palabras locales.</div>
         <div id="game" style="display: none;">
             <div id="word"></div>
             <div id="options" class="options"></div>
@@ -62,6 +63,7 @@
         const scoreElement = document.getElementById('score');
         const loadingElement = document.getElementById('loading');
         const gameElement = document.getElementById('game');
+        const errorElement = document.getElementById('error');
 
         let words = [];
         let currentWordIndex = 0;
@@ -92,6 +94,7 @@
                 return generatedWords;
             } catch (error) {
                 console.error('Error fetching words:', error);
+                errorElement.style.display = 'block';
                 return [];
             }
         }
@@ -99,6 +102,7 @@
         async function initGame() {
             loadingElement.style.display = 'block';
             gameElement.style.display = 'none';
+            errorElement.style.display = 'none';
 
             words = await fetchWords();
             if (words.length === 0) {
@@ -112,58 +116,3 @@
             }
 
             currentWordIndex = 0;
-            score = 0;
-            scoreElement.textContent = `Puntuación: ${score}`;
-
-            loadingElement.style.display = 'none';
-            gameElement.style.display = 'block';
-
-            nextWord();
-        }
-
-        function nextWord() {
-            if (currentWordIndex >= words.length) {
-                alert(`¡Juego terminado! Tu puntuación final es: ${score}`);
-                initGame();
-                return;
-            }
-
-            const currentWord = words[currentWordIndex];
-            wordElement.textContent = currentWord.word;
-
-            const options = [currentWord.translation];
-            while (options.length < 4) {
-                const randomWord = words[Math.floor(Math.random() * words.length)];
-                if (!options.includes(randomWord.translation)) {
-                    options.push(randomWord.translation);
-                }
-            }
-
-            options.sort(() => Math.random() - 0.5);
-
-            optionsElement.innerHTML = '';
-            options.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option;
-                button.onclick = () => checkAnswer(option);
-                optionsElement.appendChild(button);
-            });
-        }
-
-        function checkAnswer(selectedOption) {
-            const currentWord = words[currentWordIndex];
-            if (selectedOption === currentWord.translation) {
-                score++;
-                alert('¡Correcto!');
-            } else {
-                alert(`Incorrecto. La respuesta correcta es: ${currentWord.translation}`);
-            }
-            scoreElement.textContent = `Puntuación: ${score}`;
-            currentWordIndex++;
-            nextWord();
-        }
-
-        initGame();
-    </script>
-</body>
-</html>
