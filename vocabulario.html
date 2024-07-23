@@ -117,46 +117,30 @@ async function fetchWords() {
     }
 }
         
-        async function initGame() {
-            loadingElement.style.display = 'block';
-            gameElement.style.display = 'none';
+async function initGame() {
+    loadingElement.style.display = 'block';
+    gameElement.style.display = 'none';
 
-            if (allWords.length === 0) {
-                const fetchPromise = fetchWords();
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Timeout')), 10000)
-                );
+    allWords = await fetchWords();
+    console.log('Fetched words:', allWords);
 
-                try {
-                    allWords = await Promise.race([fetchPromise, timeoutPromise]);
-                } catch (error) {
-                    console.error('Error or timeout while fetching words:', error);
-                    allWords = [
-                        {word: "Apple", translation: "Manzana"},
-                        {word: "House", translation: "Casa"},
-                        {word: "Dog", translation: "Perro"},
-                        {word: "Cat", translation: "Gato"},
-                        {word: "Book", translation: "Libro"}
-                    ];
-                }
+    if (allWords.length === 0) {
+        alert('No se pudieron cargar las palabras. Por favor, recarga la página o inténtalo más tarde.');
+        loadingElement.textContent = 'Error al cargar las palabras';
+        return;
+    }
 
-                debugElement.innerHTML = `Palabras recibidas: ${allWords.length}<br>`;
-                allWords.forEach(word => {
-                    debugElement.innerHTML += `${word.word}: ${word.translation}<br>`;
-                });
-            }
+    currentWords = getRandomSubset(allWords, 4);
+    currentWordIndex = 0;
+    score = 0;
+    scoreElement.textContent = `Puntuación: ${score}`;
 
-            currentWords = getRandomSubset(allWords, 4);
-            currentWordIndex = 0;
-            score = 0;
-            scoreElement.textContent = `Puntuación: ${score}`;
+    loadingElement.style.display = 'none';
+    gameElement.style.display = 'block';
 
-            loadingElement.style.display = 'none';
-            gameElement.style.display = 'block';
-
-            nextWord();
-        }
-
+    nextWord();
+}
+        
         function getRandomSubset(array, size) {
             const shuffled = array.sort(() => 0.5 - Math.random());
             return shuffled.slice(0, size);
