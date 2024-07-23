@@ -78,59 +78,65 @@
         let score = 0;
 
 async function fetchWords() {
-    try {
-        console.log('Fetching words...');
-        const response = await fetch('/.netlify/functions/getWords', {
-            method: 'POST',
-            body: JSON.stringify({ prompt: 'Test prompt' }),
-        });
+            try {
+                console.log('Fetching words...');
+                const response = await fetch('/.netlify/functions/getWords', {
+                    method: 'POST',
+                    body: JSON.stringify({ prompt: 'Dame 120 palabras en inglés con sus traducciones al español, apropiadas para niños' }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Error response:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('Received data:', data);
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error('Received invalid data format from API');
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Error fetching words:', error);
+                debugElement.innerHTML += `<p>Error fetching words: ${error.message}</p>`;
+                alert(`Error fetching words: ${error.message}`);
+                return [];
+            }
         }
 
-        const data = await response.json();
-        console.log('Received data:', data);
+        async function initGame() {
+            loadingElement.style.display = 'block';
+            gameElement.style.display = 'none';
+            debugElement.innerHTML = ''; // Clear previous debug messages
 
-        // For testing purposes, return a fixed set of words
-        return [
-            {"word": "Apple", "translation": "Manzana"},
-            {"word": "House", "translation": "Casa"},
-            {"word": "Dog", "translation": "Perro"},
-            {"word": "Cat", "translation": "Gato"},
-            {"word": "Book", "translation": "Libro"}
-        ];
-    } catch (error) {
-        console.error('Error fetching words:', error);
-        alert(`Error fetching words: ${error.message}`);
-        return [];
-    }
-}
-async function initGame() {
-    loadingElement.style.display = 'block';
-    gameElement.style.display = 'none';
+            allWords = await fetchWords();
+            console.log('Fetched words:', allWords);
 
-    allWords = await fetchWords();
-    console.log('Fetched words:', allWords);
+            if (allWords.length === 0) {
+                const errorMessage = 'No se pudieron cargar las palabras. Por favor, recarga la página o inténtalo más tarde.';
+                alert(errorMessage);
+                loadingElement.textContent = errorMessage;
+                debugElement.innerHTML += `<p>${errorMessage}</p>`;
+                return;
+            }
 
-    if (allWords.length === 0) {
-        alert('No se pudieron cargar las palabras. Por favor, recarga la página o inténtalo más tarde.');
-        loadingElement.textContent = 'Error al cargar las palabras';
-        return;
-    }
+            currentWords = getRandomSubset(allWords, 4);
+            currentWordIndex = 0;
+            score = 0;
+            scoreElement.textContent = `Puntuación: ${score}`;
 
-    currentWords = getRandomSubset(allWords, 4);
-    currentWordIndex = 0;
-    score = 0;
-    scoreElement.textContent = `Puntuación: ${score}`;
+            loadingElement.style.display = 'none';
+            gameElement.style.display = 'block';
 
-    loadingElement.style.display = 'none';
-    gameElement.style.display = 'block';
+            nextWord();
+        }
 
-    nextWord();
-}
         
         function getRandomSubset(array, size) {
             const shuffled = array.sort(() => 0.5 - Math.random());
