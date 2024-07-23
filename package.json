@@ -1,0 +1,8 @@
+{
+  "name": "vocabulary-game",
+  "version": "1.0.0",
+  "description": "A vocabulary game using Netlify functions",
+  "dependencies": {
+    "axios": "^0.21.1"
+  }
+}
