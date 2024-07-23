@@ -5,7 +5,17 @@ exports.handler = async function(event, context) {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  const { prompt } = JSON.parse(event.body);
+  let prompt;
+  try {
+    const body = JSON.parse(event.body);
+    prompt = body.prompt;
+  } catch (error) {
+    return { statusCode: 400, body: 'Invalid JSON in request body' };
+  }
+
+  if (!prompt) {
+    return { statusCode: 400, body: 'Prompt is required' };
+  }
 
   try {
     const response = await axios.post(
@@ -30,6 +40,7 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ words: response.data.choices[0].text })
     };
   } catch (error) {
+    console.error('Error:', error.response ? error.response.data : error.message);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'An error occurred while fetching words' })
