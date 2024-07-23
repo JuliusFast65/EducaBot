@@ -82,7 +82,7 @@ async function fetchWords() {
                 console.log('Fetching words...');
                 const response = await fetch('/.netlify/functions/getWords', {
                     method: 'POST',
-                    body: JSON.stringify({ prompt: 'Dame 120 palabras en inglés con sus traducciones al español, apropiadas para niños' }),
+                    body: JSON.stringify({ prompt: 'Dame 120 palabras en inglés con sus traducciones al español, apropiadas para niños. Usa el siguiente formato para cada línea: english_word: spanish_translation' }),
                     headers: {
                         'Content-Type': 'application/json'
                     }
