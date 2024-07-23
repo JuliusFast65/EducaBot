@@ -39,9 +39,15 @@
         button:hover {
             background-color: #2980b9;
         }
-        #score, #loading, #error {
+        #score, #loading, #error, #debug {
             margin-top: 20px;
             font-size: 18px;
+        }
+        #debug {
+            white-space: pre-wrap;
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
         }
     </style>
 </head>
@@ -50,6 +56,7 @@
         <h1>Juego de Vocabulario en Inglés</h1>
         <div id="loading">Cargando palabras...</div>
         <div id="error" style="display: none;">Error cargando palabras. Usando palabras locales.</div>
+        <div id="debug" style="display: none;"></div>
         <div id="game" style="display: none;">
             <div id="word"></div>
             <div id="options" class="options"></div>
@@ -64,6 +71,7 @@
         const loadingElement = document.getElementById('loading');
         const gameElement = document.getElementById('game');
         const errorElement = document.getElementById('error');
+        const debugElement = document.getElementById('debug');
 
         let words = [];
         let currentWordIndex = 0;
@@ -113,6 +121,7 @@
             loadingElement.style.display = 'block';
             gameElement.style.display = 'none';
             errorElement.style.display = 'none';
+            debugElement.style.display = 'none';
 
             words = await fetchWords();
             if (words.length === 0) {
@@ -125,6 +134,8 @@
                 ];
             } else {
                 words = shuffleArray(words).slice(0, 120);
+                debugElement.style.display = 'block';
+                debugElement.textContent = `Palabras traídas correctamente:\n${JSON.stringify(words, null, 2)}`;
             }
 
             currentWordIndex = 0;
