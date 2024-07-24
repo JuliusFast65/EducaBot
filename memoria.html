@@ -7,15 +7,22 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
         }
-        .game-container {
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             text-align: center;
+        }
+        h1 {
+            color: #ff69b4;
         }
         .cards {
             display: grid;
@@ -24,65 +31,98 @@
             margin-top: 20px;
         }
         .card {
-            width: 100px;
-            height: 100px;
-            background-color: #3498db;
+            width: 80px;
+            height: 80px;
+            background-color: #ff69b4;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 24px;
             color: white;
             cursor: pointer;
+            border-radius: 5px;
             transition: transform 0.3s;
         }
         .card:hover {
             transform: scale(1.05);
         }
-        #attempts {
-            margin-top: 20px;
-            font-size: 18px;
+        #attempts, #totalScore {
             font-weight: bold;
-        }
-        #start-button {
+            font-size: 18px;
             margin-top: 20px;
+            color: #4b0082;
+        }
+        button {
+            background-color: #ff69b4;
+            border: none;
+            color: white;
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #2ecc71;
-            color: white;
-            border: none;
             cursor: pointer;
             border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #ff1493;
+        }
+        #finishGame {
+            background-color: #4b0082;
+        }
+        #finishGame:hover {
+            background-color: #8a2be2;
+        }
+        #exitMessage {
+            margin-top: 20px;
+            font-style: italic;
+            color: #4b0082;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
+    <div class="container">
         <h1>Juego de Memoria</h1>
-        <div id="start-screen">
+        <div id="totalScore">Puntuación total: 0</div>
+        <div id="startScreen">
             <p>¿Cuántos intentos fallidos quieres permitir?</p>
-            <input type="number" id="attempts-input" min="1" value="5">
-            <button id="start-button">Comenzar Juego</button>
+            <input type="number" id="attemptsInput" min="1" value="5">
+            <button id="startButton">Comenzar Juego</button>
         </div>
-        <div id="game-screen" style="display: none;">
+        <div id="gameScreen" style="display: none;">
             <div id="cards" class="cards"></div>
             <div id="attempts">Intentos fallidos restantes: 0</div>
+            <button id="finishGame">Terminar juego</button>
+        </div>
+        <div id="finalScore" style="display: none;">
+            <h2>¡Juego terminado!</h2>
+            <p id="finalScoreText"></p>
+            <button onclick="resetGame()">Jugar de nuevo</button>
+            <p id="exitMessage">Para volver a la página anterior, cierra esta ventana o pestaña del juego.</p>
         </div>
     </div>
 
     <script>
-        const startScreen = document.getElementById('start-screen');
-        const gameScreen = document.getElementById('game-screen');
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
         const cards = document.getElementById('cards');
         const attemptsDisplay = document.getElementById('attempts');
-        const attemptsInput = document.getElementById('attempts-input');
-        const startButton = document.getElementById('start-button');
+        const attemptsInput = document.getElementById('attemptsInput');
+        const startButton = document.getElementById('startButton');
+        const finishGameButton = document.getElementById('finishGame');
+        const finalScoreScreen = document.getElementById('finalScore');
+        const totalScoreDisplay = document.getElementById('totalScore');
         let values = [];
         let selectedCards = [];
         let matchedPairs = 0;
         let failedAttempts = 0;
         let maxFailedAttempts = 0;
+        let totalScore = 0;
+        let gamesPlayed = 0;
 
-        startButton.addEventListener('click', () => {
+        startButton.addEventListener('click', startGame);
+        finishGameButton.addEventListener('click', finishGame);
+
+        function startGame() {
             maxFailedAttempts = parseInt(attemptsInput.value);
             if (maxFailedAttempts > 0) {
                 startScreen.style.display = 'none';
@@ -91,7 +131,7 @@
             } else {
                 alert('Por favor, introduce un número válido de intentos fallidos.');
             }
-        });
+        }
 
         function createCard(value) {
             const card = document.createElement('div');
@@ -121,11 +161,12 @@
                 card1.style.backgroundColor = '#2ecc71';
                 card2.style.backgroundColor = '#2ecc71';
                 matchedPairs++;
+                totalScore += 10;
 
                 if (matchedPairs === 8) {
                     setTimeout(() => {
                         alert(`¡Felicidades! Has completado el juego con ${maxFailedAttempts - failedAttempts} intentos fallidos restantes.`);
-                        resetGame();
+                        endGame();
                     }, 500);
                 }
             } else {
@@ -136,11 +177,12 @@
             }
 
             selectedCards = [];
+            updateTotalScore();
 
             if (failedAttempts >= maxFailedAttempts && matchedPairs < 8) {
                 setTimeout(() => {
                     alert('Lamentablemente has perdido. ¡Inténtalo de nuevo!');
-                    resetGame();
+                    endGame();
                 }, 500);
             }
         }
@@ -161,11 +203,30 @@
             matchedPairs = 0;
             failedAttempts = 0;
             attemptsDisplay.textContent = `Intentos fallidos restantes: ${maxFailedAttempts}`;
+            gamesPlayed++;
+        }
+
+        function endGame() {
+            gameScreen.style.display = 'none';
+            startScreen.style.display = 'block';
         }
 
         function resetGame() {
+            totalScore = 0;
+            gamesPlayed = 0;
+            updateTotalScore();
+            finalScoreScreen.style.display = 'none';
             startScreen.style.display = 'block';
+        }
+
+        function updateTotalScore() {
+            totalScoreDisplay.textContent = `Puntuación total: ${totalScore}`;
+        }
+
+        function finishGame() {
             gameScreen.style.display = 'none';
+            finalScoreScreen.style.display = 'block';
+            document.getElementById('finalScoreText').textContent = `Tu puntuación final es: ${totalScore} en ${gamesPlayed} juegos`;
         }
 
         resetGame();
