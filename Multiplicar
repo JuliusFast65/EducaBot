@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practica las Tablas de Multiplicar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #ff69b4;
+        }
+        .question, #tableSelection {
+            font-size: 24px;
+            margin: 20px 0;
+            color: #4b0082;
+        }
+        .options, #tableOptions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #ff69b4;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff1493;
+        }
+        #result, #totalScore {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        #totalScore {
+            color: #4b0082;
+        }
+        #finishGame {
+            background-color: #4b0082;
+            margin-top: 20px;
+        }
+        #finishGame:hover {
+            background-color: #8a2be2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Practica las Tablas de Multiplicar</h1>
+        <div id="totalScore">Puntuación total: 0</div>
+        <div id="tableSelection">
+            <p>¿Qué tabla quieres practicar?</p>
+            <div id="tableOptions"></div>
+            <button id="finishGame">Terminar juego</button>
+        </div>
+        <div id="quiz" style="display: none;">
+            <div id="question" class="question"></div>
+            <div id="options" class="options"></div>
+            <div id="result"></div>
+        </div>
+        <div id="finalScore" style="display: none;">
+            <h2>¡Juego terminado!</h2>
+            <p id="finalScoreText"></p>
+            <button onclick="restartEntireGame()">Jugar de nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        let selectedTable;
+        let currentQuestion = 0;
+        let score = 0;
+        let totalScore = 0;
+        let totalQuestions = 0;
+        let questions = [];
+
+        function initializeTableSelection() {
+            const tableOptions = document.getElementById('tableOptions');
+            for (let i = 1; i <= 10; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.onclick = () => selectTable(i);
+                tableOptions.appendChild(button);
+            }
+            document.getElementById('finishGame').onclick = finishGame;
+        }
+
+        function selectTable(table) {
+            selectedTable = table;
+            generateQuestions();
+            document.getElementById('tableSelection').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            loadQuestion();
+        }
+
+        function generateQuestions() {
+            questions = [];
+            for (let i = 1; i <= 10; i++) {
+                questions.push({
+                    question: `¿Cuánto es ${selectedTable} x ${i}?`,
+                    options: [
+                        selectedTable * i - 1,
+                        selectedTable * i,
+                        selectedTable * i + 1,
+                        selectedTable * i + 2
+                    ].sort(() => Math.random() - 0.5),
+                    answer: selectedTable * i
+                });
+            }
+            questions = questions.sort(() => Math.random() - 0.5).slice(0, 5);
+        }
+
+        function loadQuestion() {
+            const questionEl = document.getElementById('question');
+            const optionsEl = document.getElementById('options');
+            const resultEl = document.getElementById('result');
+
+            if (currentQuestion < questions.length) {
+                const q = questions[currentQuestion];
+                questionEl.textContent = q.question;
+                optionsEl.innerHTML = '';
+                resultEl.textContent = '';
+
+                q.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.onclick = () => checkAnswer(option);
+                    optionsEl.appendChild(button);
+                });
+            } else {
+                questionEl.textContent = '¡Quiz terminado!';
+                optionsEl.innerHTML = '';
+                resultEl.textContent = `Tu puntuación en esta tabla: ${score} de ${questions.length}`;
+                const restartButton = document.createElement('button');
+                restartButton.textContent = 'Practicar otra tabla';
+                restartButton.onclick = restartGame;
+                optionsEl.appendChild(restartButton);
+            }
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const q = questions[currentQuestion];
+            if (selectedAnswer === q.answer) {
+                score++;
+                totalScore++;
+                document.getElementById('result').textContent = '¡Correcto! 😊';
+            } else {
+                document.getElementById('result').textContent = `Incorrecto. La respuesta correcta era ${q.answer}. 😢`;
+            }
+            currentQuestion++;
+            totalQuestions++;
+            updateTotalScore();
+            setTimeout(loadQuestion, 1500);
+        }
+
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('tableSelection').style.display = 'block';
+        }
+
+        function updateTotalScore() {
+            document.getElementById('totalScore').textContent = `Puntuación total: ${totalScore} de ${totalQuestions}`;
+        }
+
+        function finishGame() {
+            document.getElementById('tableSelection').style.display = 'none';
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('finalScore').style.display = 'block';
+            document.getElementById('finalScoreText').textContent = `Tu puntuación final es: ${totalScore} de ${totalQuestions}`;
+        }
+
+        function restartEntireGame() {
+            totalScore = 0;
+            totalQuestions = 0;
+            document.getElementById('finalScore').style.display = 'none';
+            document.getElementById('tableSelection').style.display = 'block';
+            updateTotalScore();
+        }
+
+        initializeTableSelection();
+    </script>
+</body>
+</html>
