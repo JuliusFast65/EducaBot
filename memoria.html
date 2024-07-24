@@ -46,7 +46,7 @@
         .card:hover {
             transform: scale(1.05);
         }
-        #attempts, #totalScore, #timer {
+        #attempts, #totalScore {
             font-weight: bold;
             font-size: 18px;
             margin-top: 20px;
@@ -91,7 +91,6 @@
         <div id="gameScreen" style="display: none;">
             <div id="cards" class="cards"></div>
             <div id="attempts">Intentos fallidos restantes: 0</div>
-            <div id="timer">Tiempo restante: 60</div>
             <button id="finishGame">Terminar juego</button>
         </div>
         <div id="finalScore" style="display: none;">
@@ -112,7 +111,6 @@
         const finishGameButton = document.getElementById('finishGame');
         const finalScoreScreen = document.getElementById('finalScore');
         const totalScoreDisplay = document.getElementById('totalScore');
-        const timerDisplay = document.getElementById('timer');
         let values = [];
         let selectedCards = [];
         let matchedPairs = 0;
@@ -120,8 +118,6 @@
         let maxFailedAttempts = 0;
         let totalScore = 0;
         let gamesPlayed = 0;
-        let timer;
-        let timeLeft;
 
         startButton.addEventListener('click', startGame);
         finishGameButton.addEventListener('click', finishGame);
@@ -131,8 +127,6 @@
             if (maxFailedAttempts > 0) {
                 startScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
-                timeLeft = 60;
-                timer = setInterval(updateTimer, 1000);
                 initGame();
             } else {
                 alert('Por favor, introduce un número válido de intentos fallidos.');
@@ -171,7 +165,8 @@
 
                 if (matchedPairs === 8) {
                     setTimeout(() => {
-                        redirectToEndPage('win');
+                        alert(`¡Felicidades! Has completado el juego con ${maxFailedAttempts - failedAttempts} intentos fallidos restantes.`);
+                        endGame();
                     }, 500);
                 }
             } else {
@@ -186,7 +181,8 @@
 
             if (failedAttempts >= maxFailedAttempts && matchedPairs < 8) {
                 setTimeout(() => {
-                    redirectToEndPage('lose');
+                    alert('Lamentablemente has perdido. ¡Inténtalo de nuevo!');
+                    endGame();
                 }, 500);
             }
         }
@@ -210,9 +206,9 @@
             gamesPlayed++;
         }
 
-        function redirectToEndPage(result) {
-            const url = result === 'win' ? 'win.html' : 'lose.html';
-            window.location.href = url;
+        function endGame() {
+            gameScreen.style.display = 'none';
+            startScreen.style.display = 'block';
         }
 
         function resetGame() {
@@ -228,126 +224,12 @@
         }
 
         function finishGame() {
-            clearInterval(timer);
             gameScreen.style.display = 'none';
             finalScoreScreen.style.display = 'block';
             document.getElementById('finalScoreText').textContent = `Tu puntuación final es: ${totalScore} en ${gamesPlayed} juegos`;
         }
 
-        function updateTimer() {
-            timeLeft--;
-            timerDisplay.textContent = `Tiempo restante: ${timeLeft}`;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                redirectToEndPage('lose');
-            }
-        }
-
         resetGame();
     </script>
-</body>
-</html>
-
-<!-- win.html -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>¡Has Ganado!</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #2ecc71;
-        }
-        button {
-            background-color: #4b0082;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #8a2be2;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>¡Felicidades, has ganado!</h1>
-        <p>Has completado el juego con éxito.</p>
-        <button onclick="window.location.href='index.html'">Volver al inicio</button>
-    </div>
-</body>
-</html>
-
-<!-- lose.html -->
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Has Perdido</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #e74c3c;
-        }
-        button {
-            background-color: #4b0082;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #8a2be2;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Lo siento, has perdido</h1>
-        <p>No has podido completar el juego.</p>
-        <button onclick="window.location.href='index.html'">Volver a intentarlo</button>
-    </div>
 </body>
 </html>
