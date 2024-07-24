@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Preguntas: Frindle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #progress {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Juego de Preguntas: Frindle</h1>
+        <div id="progress"></div>
+        <div id="question"></div>
+        <div id="answers"></div>
+        <div id="result"></div>
+        <button id="next-btn" style="display: none;">Siguiente Pregunta</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál es el nombre del protagonista principal?",
+                answers: ["Nick Allen", "John Smith", "Peter Parker", "Tom Sawyer"],
+                correctAnswer: 0
+            },
+            {
+                question: "¿Qué palabra inventa Nick?",
+                answers: ["Lápiz", "Frindle", "Cuaderno", "Borrador"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Quién es la maestra de lengua de Nick?",
+                answers: ["Sra. Johnson", "Sra. Granger", "Sra. Thompson", "Sra. Davis"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿En qué grado está Nick cuando inventa la palabra?",
+                answers: ["Tercer grado", "Cuarto grado", "Quinto grado", "Sexto grado"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué objeto común Nick decide llamar 'frindle'?",
+                answers: ["Un lápiz", "Una goma de borrar", "Un bolígrafo", "Un cuaderno"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Cómo se llama la escuela a la que asiste Nick?",
+                answers: ["Lincoln Elementary", "Washington Middle School", "Jefferson Elementary", "Roosevelt High"],
+                correctAnswer: 0
+            },
+            {
+                question: "¿Qué le gusta hacer a Nick en clase?",
+                answers: ["Dormir", "Hacer preguntas creativas", "Leer libros", "Dibujar"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué objeto utiliza la Sra. Granger para desafiar a Nick al principio de la historia?",
+                answers: ["Un libro", "Un diccionario", "Una pizarra", "Una computadora"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué hace la Sra. Granger cuando los estudiantes usan la palabra 'frindle'?",
+                answers: ["Los felicita", "Los ignora", "Les da detención", "Les da puntos extra"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Quién apoya inicialmente a Nick en el uso de 'frindle'?",
+                answers: ["Sus padres", "La directora", "Sus compañeros de clase", "La Sra. Granger"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Cómo se expande el uso de 'frindle' fuera de la escuela?",
+                answers: ["Por televisión", "Por radio", "Por periódico", "Todas las anteriores"],
+                correctAnswer: 3
+            },
+            {
+                question: "¿Qué hace el padre de Nick cuando la palabra se vuelve famosa?",
+                answers: ["La prohíbe", "La usa en su trabajo", "Registra la marca", "La ignora"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué premio recibe Nick por su invención?",
+                answers: ["Un trofeo", "Dinero", "Un viaje", "Una beca"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Cómo reacciona inicialmente el director de la escuela ante la palabra 'frindle'?",
+                answers: ["Con entusiasmo", "Con confusión", "Con enojo", "Con indiferencia"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué hace Nick con el dinero que gana de 'frindle'?",
+                answers: ["Lo gasta", "Lo ahorra", "Crea un fondo fiduciario", "Lo dona"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué lección importante aprende Nick sobre el poder de las palabras?",
+                answers: ["Son inútiles", "Pueden cambiar el mundo", "Son solo para los adultos", "No tienen importancia"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué hace la Sra. Granger al final de la historia?",
+                answers: ["Se jubila", "Cambia de escuela", "Escribe un libro", "Usa 'frindle' en clase"],
+                correctAnswer: 3
+            },
+            {
+                question: "¿Cuánto tiempo pasa desde que Nick inventa 'frindle' hasta que se vuelve una palabra oficial?",
+                answers: ["1 año", "5 años", "10 años", "20 años"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué regalo especial recibe Nick de la Sra. Granger al final?",
+                answers: ["Un libro", "Una carta", "Un bolígrafo dorado", "Un certificado"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué lección sobre el lenguaje enseña el libro 'Frindle'?",
+                answers: ["El lenguaje nunca cambia", "Las palabras son inútiles", "El lenguaje evoluciona con el uso", "Solo los expertos pueden crear palabras"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Cuál es el apodo que Nick le da a la Sra. Granger?",
+                answers: ["La Bruja", "La Reina del Diccionario", "La Sabelotodo", "La Dama de Rojo"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué objeto característico tiene la Sra. Granger en su salón de clases?",
+                answers: ["Un globo terráqueo", "Un diccionario gigante", "Un reloj antiguo", "Una pizarra inteligente"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Cuál es el nombre del mejor amigo de Nick?",
+                answers: ["Tom", "Pete", "Janet", "Chris"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué tarea asigna la Sra. Granger que lleva a Nick a inventar 'frindle'?",
+                answers: ["Escribir un ensayo", "Investigar el origen de las palabras", "Crear un nuevo idioma", "Memorizar el diccionario"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué programa de televisión ayuda a popularizar la palabra 'frindle'?",
+                answers: ["Un noticiero local", "Un programa de juegos", "The Tonight Show", "Sesame Street"],
+                correctAnswer: 2
+            },
+            {
+                question: "¿Qué producto se crea primero con la marca 'frindle'?",
+                answers: ["Camisetas", "Bolígrafos", "Gorras", "Mochilas"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Cómo reacciona la madre de Nick ante la creciente fama de 'frindle'?",
+                answers: ["Con orgullo", "Con preocupación", "Con indiferencia", "Con enojo"],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Qué estrategia usa Nick para hacer que todos en la escuela usen 'frindle'?",
+                answers: ["Soborna a sus compañeros", "Organiza una protesta", "Crea un club secreto", "Hace que sus amigos lo ayuden a difundirlo"],
+                correctAnswer: 3
+            },
+            {
+                question: "¿Qué personaje famoso usa la palabra 'frindle' en televisión nacional?",
+                answers: ["El Presidente", "Un astronauta", "Un atleta olímpico", "Un presentador de talk show"],
+                correctAnswer: 3
+            },
+            {
+                question: "¿Qué consejo le da el abuelo de Nick sobre la fama?",
+                answers: ["Disfrútala mientras dure", "No dejes que se te suba a la cabeza", "Úsala para ganar dinero", "Ignórala completamente"],
+                correctAnswer: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const questionEl = document.getElementById('question');
+        const answersEl = document.getElementById('answers');
+        const resultEl = document.getElementById('result');
+        const nextBtn = document.getElementById('next-btn');
+        const progressEl = document.getElementById('progress');
+
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            questionEl.textContent = question.question;
+            answersEl.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const button = document.createElement('button');
+                button.textContent = answer;
+                button.onclick = () => selectAnswer(index);
+                answersEl.appendChild(button);
+            });
+
+            resultEl.textContent = '';
+            nextBtn.style.display = 'none';
+            updateProgress();
+        }
+
+        function selectAnswer(answerIndex) {
+            const question = questions[currentQuestion];
+            const buttons = answersEl.getElementsByTagName('button');
+            
+            for (let button of buttons) {
+                button.disabled = true;
+            }
+
+            if (answerIndex === question.correctAnswer) {
+                resultEl.textContent = '¡Correcto!';
+                score++;
+            } else {
+                resultEl.textContent = 'Incorrecto. La respuesta correcta era: ' + question.answers[question.correctAnswer];
+            }
+
+            nextBtn.style.display = 'inline-block';
+        }
+
+        function updateProgress() {
+            progressEl.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+        }
+
+        nextBtn.onclick = () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                questionEl.textContent = `¡Juego terminado! Tu puntuación: ${score} de ${questions.length}`;
+                answersEl.innerHTML = '';
+                resultEl.textContent = '';
+                nextBtn.style.display = 'none';
+                progressEl.textContent = 'Juego completado';
+            }
+        };
+
+        loadQuestion();
+    </script>
+</body>
+</html>
