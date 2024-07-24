@@ -171,8 +171,7 @@
 
                 if (matchedPairs === 8) {
                     setTimeout(() => {
-                        alert(`¡Felicidades! Has completado el juego con ${maxFailedAttempts - failedAttempts} intentos fallidos restantes.`);
-                        endGame();
+                        redirectToEndPage('win');
                     }, 500);
                 }
             } else {
@@ -187,8 +186,7 @@
 
             if (failedAttempts >= maxFailedAttempts && matchedPairs < 8) {
                 setTimeout(() => {
-                    alert('Lamentablemente has perdido. ¡Inténtalo de nuevo!');
-                    endGame();
+                    redirectToEndPage('lose');
                 }, 500);
             }
         }
@@ -212,10 +210,9 @@
             gamesPlayed++;
         }
 
-        function endGame() {
-            clearInterval(timer);
-            gameScreen.style.display = 'none';
-            startScreen.style.display = 'block';
+        function redirectToEndPage(result) {
+            const url = result === 'win' ? 'win.html' : 'lose.html';
+            window.location.href = url;
         }
 
         function resetGame() {
@@ -242,12 +239,115 @@
             timerDisplay.textContent = `Tiempo restante: ${timeLeft}`;
             if (timeLeft <= 0) {
                 clearInterval(timer);
-                alert('Se acabó el tiempo. ¡Inténtalo de nuevo!');
-                endGame();
+                redirectToEndPage('lose');
             }
         }
 
         resetGame();
     </script>
+</body>
+</html>
+
+<!-- win.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Has Ganado!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #2ecc71;
+        }
+        button {
+            background-color: #4b0082;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #8a2be2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Felicidades, has ganado!</h1>
+        <p>Has completado el juego con éxito.</p>
+        <button onclick="window.location.href='index.html'">Volver al inicio</button>
+    </div>
+</body>
+</html>
+
+<!-- lose.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Has Perdido</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #e74c3c;
+        }
+        button {
+            background-color: #4b0082;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #8a2be2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lo siento, has perdido</h1>
+        <p>No has podido completar el juego.</p>
+        <button onclick="window.location.href='index.html'">Volver a intentarlo</button>
+    </div>
 </body>
 </html>
